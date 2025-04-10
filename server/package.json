@@ -1,0 +1,38 @@
+{
+  "name": "server",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf dist && echo 'Done.'",
+    "prebuild": "bun run clean",
+    "build": "bun build ./index.tsx --outdir ./build",
+    "prestart": "npm run build",
+    "start": "bun run ./dist/index.js",
+    "dev": "bun --watch run index.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "eslint": "^9.24.0",
+    "eslint-plugin-prettier": "^5.2.6",
+    "eslint-plugin-security": "^3.0.1",
+    "eslint-plugin-unicorn": "^58.0.0",
+    "prettier": "^3.5.3",
+    "typescript-eslint": "^8.29.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@openrouter/ai-sdk-provider": "^0.4.5",
+    "ai": "^4.3.4",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0"
+  }
+}
