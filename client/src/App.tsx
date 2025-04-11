@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import './App.css'
 
 // Define the structure of a chat message
 interface Message {
@@ -29,13 +28,16 @@ export default function App() {
 
     try {
       // Make the API request to the backend
-      const response = await fetch('http://localhost:3000/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/chat`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt: input }),
         },
-        body: JSON.stringify({ prompt: input }),
-      })
+      )
 
       // Check if the response was successful
       if (!response.ok) {
