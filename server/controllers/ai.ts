@@ -10,8 +10,9 @@ export const status = (req: Request, res: Response) => {
 }
 
 const openrouter = createOpenRouter({ apiKey: process.env.AI_API_KEY })
-// const model = openrouter("mistralai/mistral-7b-instruct");
-const model = openrouter('mistralai/mistral-7b-instruct')
+// const model = openrouter("mistralai/mistral-7b-instruct"); // works and paid
+// const model = openrouter('deepseek/deepseek-r1-distill-llama-70b:free') // workd slow but free
+const model = openrouter('mistralai/mistral-7b-instruct:free') // worked - free and fast
 
 export const chatWithAI = (req: Request, res: Response) => {
   const { prompt } = req.body
