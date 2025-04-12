@@ -30,7 +30,7 @@ export const chatWithAI = async (req: Request, res: Response) => {
   })
   if (!session) {
     res.status(401).json({
-      staus: 'unautherized',
+      status: 'unautherized',
     })
   }
   const { prompt } = req.body
