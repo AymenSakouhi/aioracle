@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import SignUp from './components/reusable/SignUp'
+import SignIn from './components/reusable/SignIn'
 
 // Define the structure of a chat message
 interface Message {
@@ -92,6 +94,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-4">
+        <SignUp />
+        <SignIn />
         <div className="text-center">
           <h1 className="text-3xl font-bold">🔮 AI Chat Oracle</h1>
           <p className="text-gray-400">
