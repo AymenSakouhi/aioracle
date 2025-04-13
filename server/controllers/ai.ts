@@ -11,7 +11,7 @@ export const status = async (req: Request, res: Response) => {
   })
   if (!session) {
     res.status(401).json({
-      staus: 'unautherized',
+      status: 'unautherized',
     })
   }
   res.status(200).json({
@@ -25,9 +25,11 @@ const openrouter = createOpenRouter({ apiKey: process.env.AI_API_KEY })
 const model = openrouter('mistralai/mistral-7b-instruct:free') // worked - free and fast
 
 export const chatWithAI = async (req: Request, res: Response) => {
+  console.log(req.headers)
   const session = await auth.api.getSession({
     headers: fromNodeHeaders(req.headers),
   })
+  console.log('session', session)
   if (!session) {
     res.status(401).json({
       status: 'unautherized',
