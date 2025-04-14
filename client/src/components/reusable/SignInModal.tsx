@@ -1,14 +1,17 @@
 'use client'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, SubmitErrorHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchemaType } from '../../types/types'
 import { signIn } from '../../lib/auth-client'
 import { loginSchema } from '../../types/schemas'
 import SignUpModal from './SignUpModal'
+import { useModal } from '../../contexts/ModalContext'
 
 export default function SignInModal() {
   const [triggerSignUp, setTriggerSignUp] = useState(false)
+  const [loginError, setLoginError] = useState<undefined | string>('')
+  const { closeModal } = useModal()
   const {
     register,
     handleSubmit,
@@ -17,11 +20,21 @@ export default function SignInModal() {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = (data: loginSchemaType) => {
-    signIn.email({
+  const onSubmit = async (data: loginSchemaType) => {
+    const { data: tokenData, error } = await signIn.email({
       email: data.email,
       password: data.password,
     })
+    if (tokenData?.token) {
+      closeModal()
+      setLoginError('')
+    }
+    if (error) {
+      setLoginError(error.message)
+      setTimeout(() => {
+        setLoginError('')
+      }, 2000)
+    }
   }
 
   if (triggerSignUp) return <SignUpModal />
@@ -31,6 +44,11 @@ export default function SignInModal() {
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
         Sign in to your account!
       </h2>
+      {loginError && (
+        <div className="text-white mb-4 p-4 bg-red-500 rounded-md">
+          {loginError}
+        </div>
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="font-medium block text-sm text-gray-700">

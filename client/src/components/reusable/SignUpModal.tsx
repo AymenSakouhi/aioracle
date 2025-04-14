@@ -7,9 +7,12 @@ import { registerSchemaType } from '../../types/types'
 import { signUp } from '../../lib/auth-client'
 import { registerSchema } from '../../types/schemas'
 import SignInModal from './SignInModal'
+import { useModal } from '../../contexts/ModalContext'
 
 export default function SignUpModal() {
   const [triggerSignIn, setTriggerSignIn] = useState(false)
+  const [authError, setAuthError] = useState<undefined | string>('')
+  const { closeModal } = useModal()
 
   const {
     register,
@@ -20,11 +23,21 @@ export default function SignUpModal() {
   })
 
   const onSubmit = async (data: registerSchemaType) => {
-    await signUp.email({
+    const { data: tokenData, error } = await signUp.email({
       name: data.name,
       email: data.email,
       password: data.password,
     })
+    if (tokenData?.token) {
+      closeModal()
+      setAuthError('')
+    }
+    if (error) {
+      setAuthError(error.message)
+      setTimeout(() => {
+        setAuthError('')
+      }, 2000)
+    }
   }
 
   if (triggerSignIn) return <SignInModal />
@@ -34,6 +47,11 @@ export default function SignUpModal() {
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
         Create your account
       </h2>
+      {authError && (
+        <div className="text-white mb-4 p-4 bg-red-500 rounded-md">
+          {authError}
+        </div>
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="font-medium block text-sm text-gray-700">

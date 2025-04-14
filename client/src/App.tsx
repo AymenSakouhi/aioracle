@@ -3,6 +3,7 @@ import { signOut, useSession } from './lib/auth-client'
 // import SignUp from './components/reusable/SignUp'
 import SignInModal from './components/reusable/SignInModal'
 import ModalWrapper from './components/reusable/ModalWrapper'
+import { useModal } from './contexts/ModalContext'
 
 // Define the structure of a chat message
 interface Message {
@@ -16,7 +17,7 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([]) // Array of all messages in the conversation
   const [isLoading, setIsLoading] = useState(false) // Loading state for the AI response
   const [error, setError] = useState<Error | null>(null) // Error state if something goes wrong
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { openModal } = useModal()
 
   const { data: session } = useSession()
   console.log('this is your session data', session)
@@ -100,32 +101,21 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
-      <ModalWrapper
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false)
-        }}
-      >
+    <div className="relative min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+      <nav className="w-full fixed top-0 left-0 flex items-center justify-between p-4">
+        <p>AiOracle</p>
+        <button
+          className="cursor-pointer text-white bg-slate-700 rounded-md px-4 py-2"
+          onClick={() => {
+            session ? signOut() : openModal()
+          }}
+        >
+          {session ? 'Sign Out' : 'Sign In'}
+        </button>
+      </nav>
+      <ModalWrapper>
         <SignInModal />
       </ModalWrapper>
-      {session ? (
-        <button
-          onClick={() => {
-            signOut()
-          }}
-        >
-          sign out
-        </button>
-      ) : (
-        <button
-          onClick={() => {
-            setIsModalOpen(true)
-          }}
-        >
-          sign in
-        </button>
-      )}
       <div className="w-full max-w-2xl space-y-4">
         <div className="text-center">
           <h1 className="text-3xl font-bold">🔮 AI Chat Oracle</h1>
