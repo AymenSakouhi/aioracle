@@ -10,8 +10,8 @@
 
 ## 🧰 Technologies Used
 
-- Frontend: JavaScript
-- Backend: TypeScript
+- Backend: Express, Better-Auth, OpenRouter AI SDK, Prisma
+- FrontEnd: TypeScript, React, React-hook-form, Zod, AI sdk
 
 ## 📂 Project Structure
 
@@ -55,17 +55,19 @@ aioracle/
 
    ```bash
    cd server
-   npm start
+   npm i
+   npm run dev
    ```
 
 2. In a new terminal, start the frontend application:
 
    ```bash
    cd client
-   npm start
+   npm i
+   npm run dev
    ```
 
-3. Open your browser and navigate to `http://localhost:3000` to interact with AIOracle.
+3. Open your browser and navigate to `http://localhost:5173` to interact with AIOracle.
 
 ## 🤖 Usage
 
