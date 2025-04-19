@@ -1,8 +1,8 @@
-import { Router } from "express";
+import { Router } from 'express'
 
-export const routes = Router();
+export const routes = Router()
 
-import { status, chatWithAI } from "../controllers/ai";
+import { status, chatWithAI } from '../controllers/ai'
 
-routes.get("/status", status);
-routes.post("/chat", chatWithAI);
+routes.get('/status', status)
+routes.post('/chat', chatWithAI)

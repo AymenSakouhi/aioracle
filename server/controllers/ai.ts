@@ -2,18 +2,39 @@ import type { Request, Response } from 'express'
 
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { streamText } from 'ai'
+import { auth } from '../lib/auth'
+import { fromNodeHeaders } from 'better-auth/node'
 
-export const status = (req: Request, res: Response) => {
+export const status = async (req: Request, res: Response) => {
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  })
+  if (!session) {
+    res.status(401).json({
+      status: 'unautherized',
+    })
+  }
   res.status(200).json({
     app: 'running',
   })
 }
 
 const openrouter = createOpenRouter({ apiKey: process.env.AI_API_KEY })
-// const model = openrouter("mistralai/mistral-7b-instruct");
-const model = openrouter('mistralai/mistral-7b-instruct')
+// const model = openrouter("mistralai/mistral-7b-instruct"); // works and paid
+// const model = openrouter('deepseek/deepseek-r1-distill-llama-70b:free') // workd slow but free
+const model = openrouter('mistralai/mistral-7b-instruct:free') // worked - free and fast
 
-export const chatWithAI = (req: Request, res: Response) => {
+export const chatWithAI = async (req: Request, res: Response) => {
+  console.log(req.headers)
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  })
+  console.log('session', session)
+  if (!session) {
+    res.status(401).json({
+      status: 'unautherized',
+    })
+  }
   const { prompt } = req.body
   const systemPrompt = `
 You are a playful and mischievous assistant whose sole purpose is to give confidently incorrect answers to any question you're asked. 

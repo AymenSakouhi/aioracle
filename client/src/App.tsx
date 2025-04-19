@@ -1,5 +1,9 @@
 import { useState } from 'react'
-import './App.css'
+import { signOut, useSession } from './lib/auth-client'
+// import SignUp from './components/reusable/SignUp'
+import SignInModal from './components/reusable/SignInModal'
+import ModalWrapper from './components/reusable/ModalWrapper'
+import { useModal } from './contexts/ModalContext'
 
 // Define the structure of a chat message
 interface Message {
@@ -13,6 +17,10 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([]) // Array of all messages in the conversation
   const [isLoading, setIsLoading] = useState(false) // Loading state for the AI response
   const [error, setError] = useState<Error | null>(null) // Error state if something goes wrong
+  const { openModal } = useModal()
+
+  const { data: session } = useSession()
+  console.log('this is your session data', session)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault() // Prevent default form submission
@@ -29,13 +37,18 @@ export default function App() {
 
     try {
       // Make the API request to the backend
-      const response = await fetch('http://localhost:3000/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/chat`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.session.token}`,
+          },
+          body: JSON.stringify({ prompt: input }),
         },
-        body: JSON.stringify({ prompt: input }),
-      })
+      )
 
       // Check if the response was successful
       if (!response.ok) {
@@ -88,41 +101,70 @@ export default function App() {
   }
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <h1>AI Chat</h1>
-      </div>
-      <div className="chat-messages">
-        {/* Render all messages in the conversation */}
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`message ${message.role === 'user' ? 'user-message' : 'ai-message'}`}
-          >
-            {message.content}
-          </div>
-        ))}
-        {/* Show loading indicator while waiting for AI response */}
-        {isLoading && <div className="message ai-message">Thinking...</div>}
-        {/* Show error message if something went wrong */}
-        {error && (
-          <div className="message error-message">Error: {error.message}</div>
-        )}
-      </div>
-      {/* Chat input form */}
-      <form onSubmit={handleSubmit} className="chat-input-form">
-        <input
-          name="prompt"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
-          className="chat-input"
-          disabled={isLoading}
-        />
-        <button type="submit" className="send-button" disabled={isLoading}>
-          {isLoading ? 'Sending...' : 'Send'}
+    <div className="relative min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+      <nav className="w-full fixed top-0 left-0 flex items-center justify-between p-4">
+        <p>AiOracle</p>
+        <button
+          className="cursor-pointer text-white bg-slate-700 rounded-md px-4 py-2"
+          onClick={() => {
+            session ? signOut() : openModal()
+          }}
+        >
+          {session ? 'Sign Out' : 'Sign In'}
         </button>
-      </form>
+      </nav>
+      <ModalWrapper>
+        <SignInModal />
+      </ModalWrapper>
+      <div className="w-full max-w-2xl space-y-4">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">🔮 AI Chat Oracle</h1>
+          <p className="text-gray-400">
+            Ask any question and you will get mystical answer
+          </p>
+        </div>
+        <div className="bg-gray-800 rounded-xl p-4 space-y-2 h-96 overflow-y-auto">
+          {/* Render all messages in the conversation */}
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`p-2 rounded-lg max-w-[80%] ${message.role === 'user' ? 'text-[#333333] ml-auto bg-[#eae4dd]' : 'mr-auto bg-indigo-700'}`}
+            >
+              {message.content}
+            </div>
+          ))}
+          {/* Show loading indicator while waiting for AI response */}
+          {isLoading && (
+            <div className="p-2 bg-indigo-700 rounded-lg text-white">
+              Thinking...
+            </div>
+          )}
+          {/* Show error message if something went wrong */}
+          {error && (
+            <div className="p-2 bg-red-500 rounded-lg text-white">
+              Error: {error.message}
+            </div>
+          )}
+        </div>
+        {/* Chat input form */}
+        <form onSubmit={handleSubmit} className="flex space-x-2">
+          <input
+            name="prompt"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-1 p-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-ring-500"
+            disabled={isLoading}
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition disabled:opacity-50"
+            disabled={isLoading || !session}
+          >
+            {isLoading ? 'Sending...' : 'Send'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

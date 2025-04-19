@@ -30,7 +30,9 @@
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "^0.4.5",
+    "@prisma/client": "^6.6.0",
     "ai": "^4.3.4",
+    "better-auth": "^1.2.6",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "morgan": "^1.10.0"
